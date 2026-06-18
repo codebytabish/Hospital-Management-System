@@ -1,7 +1,7 @@
 const { getAIClient } = require("../config/openrouter");
 const ChatLog = require("../models/ChatLog");
 
-const SYSTEM_PROMPT = `You are SynaptoClin AI, a medical triage assistant.
+const SYSTEM_PROMPT = `You are SynaptoClin  AI, a medical triage assistant.
 When a patient describes symptoms, respond ONLY with a valid JSON object in this exact format:
 {
   "likelyCause": "string",
