@@ -1,16 +1,32 @@
-# React + Vite
+# SynaptoClin AI 🏥
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> Bridging intelligence and healthcare — one diagnosis at a time.
 
-Currently, two official plugins are available:
+SynaptoClin is a full-stack AI-powered healthcare management platform. It combines role-based access control, smart appointment scheduling, and LLM-driven symptom analysis into a single clinical platform designed to bridge the gap between patients and healthcare providers.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+##  Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Role-Based Authentication** — Separate dashboards for Patient, Doctor, and Admin
+**Smart Appointment System** — Book, manage, and track appointments
+**AI Symptom Checker** — LLM-powered triage and specialist recommendations
+**Prescription Management** — Doctors can issue and manage prescriptions
+**Patient & Doctor Dashboards** — Personalized views per role
+**Clinical Design System** — Clean, modern UI built for healthcare
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🛠️ Tech Stack
+
+| Layer          |      Technology |
+|-------|------------|
+| Frontend       | React, Vite, Tailwind CSS  |
+| Backend        | Node.js, Express.js |
+| Database       | MongoDB, Mongoose |
+| Auth           | JWT + Role-based Middleware |
+| AI             | OpenRouter API (LLM symptom analysis) |
+
+---
+
+## 📁 Project Structure
