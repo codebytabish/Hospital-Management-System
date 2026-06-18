@@ -1,4 +1,4 @@
-# SynaptoClin AI 🏥
+# SynaptoClin AI 
 
 > Bridging intelligence and healthcare — one diagnosis at a time.
 
@@ -9,15 +9,15 @@ SynaptoClin is a full-stack AI-powered healthcare management platform. It combin
 ##  Features
 
 **Role-Based Authentication** — Separate dashboards for Patient, Doctor, and Admin
-**Smart Appointment System** — Book, manage, and track appointments
-**AI Symptom Checker** — LLM-powered triage and specialist recommendations
-**Prescription Management** — Doctors can issue and manage prescriptions
-**Patient & Doctor Dashboards** — Personalized views per role
-**Clinical Design System** — Clean, modern UI built for healthcare
+--**Smart Appointment System** — Book, manage, and track appointments
+--**AI Symptom Checker** — LLM-powered triage and specialist recommendations
+--**Prescription Management** — Doctors can issue and manage prescriptions
+--**Patient & Doctor Dashboards** — Personalized views per role
+-**Clinical Design System** — Clean, modern UI built for healthcare
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer          |      Technology |
 |-------|------------|
@@ -29,4 +29,3 @@ SynaptoClin is a full-stack AI-powered healthcare management platform. It combin
 
 ---
 
-## 📁 Project Structure
