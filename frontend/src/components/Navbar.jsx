@@ -23,8 +23,10 @@ const Navbar = () => {
 
         {/* Desktop actions — hidden on mobile */}
         <div className='hidden md:flex items-center gap-3'>
-          <Link to='/login' className='text-white/75 hover:text-white text-sm transition-colors'>Login</Link>
-          <Link to='/get-started' className='bg-blue-600 hover:bg-blue-500 text-white text-sm px-4 py-2 rounded-md transition-colors'>
+          <Link to='/login' className='border rounded-md border-white/25 py-2 px-4 text-white/75 hover:text-white text-sm transition-colors'>Login</Link>
+          <Link to='/get-started' className=' text-white text-sm px-4 py-2 rounded-md transition-colors'
+          style={{background:'linear-gradient(15deg,#4f8ef7,#a855f7)'}}
+          >
             Get Started
           </Link>
         </div>

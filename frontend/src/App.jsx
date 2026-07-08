@@ -1,29 +1,40 @@
-import { useState } from 'react'
 import { Routes, Route } from "react-router-dom";
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
 import './App.css'
-import Navbar from '../components/Navbar'
-import ForDoctors from '../pages/ForDoctors';
-import Hero from '../components/Hero';
-import Features from '../components/Features';
-import HowItWorks from '../Components/HowItWorks';
-import Stats from '../components/Stats';
+import Navbar from './components/Navbar'
+import Hero from './components/Hero'
+import Stats from './components/Stats'
+import Features from './components/Features'
+import HowItWorks from './components/HowItWorks'
+import Footer from './components/Footer'
+import Login from './pages/Login'
+import GetStarted from './pages/GetStarted'
+import PatientDashboard from './pages/PatientDashboard'
+import ProtectedRoute from './components/ProtectedRoute'
+
+const Landing = () => (
+  <>
+    <Hero />
+    <Stats />
+    <Features />
+    <HowItWorks />
+    <Footer />
+  </>
+)
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
-     <Navbar/>
-     <Hero/>
-     <Stats/>
-     <Features/>
-     <HowItWorks/>
-     <Routes>
-</Routes>
-
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/get-started" element={<GetStarted />} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <PatientDashboard />
+          </ProtectedRoute>
+        } />
+      </Routes>
     </>
   )
 }

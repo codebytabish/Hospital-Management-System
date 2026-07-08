@@ -1,4 +1,6 @@
+import { useNavigate } from 'react-router-dom'
 const Hero = () => {
+  const navigate = useNavigate()
   return (
     <section
       className="flex flex-col items-center text-center px-8 py-24 relative overflow-hidden"
@@ -23,8 +25,8 @@ const Hero = () => {
       </div>
 
       {/* Heading */}
-      <h1 className="relative text-5xl font-medium leading-tight max-w-2xl text-white mb-5">
-        Smart healthcare,{" "}
+      <h1 className="relative text-5xl font-medium leading-tight max-w-2xl text-white mb-5 animate-pulse">
+        Smart healthcare,{" "}<br/>
         <span
           style={{
             background: "linear-gradient(90deg,#4f8ef7,#a855f7)",
@@ -46,13 +48,17 @@ const Hero = () => {
 
       {/* Buttons */}
       <div className="relative flex items-center gap-3 flex-wrap justify-center">
-        <button
+       <button
+          onClick={() => navigate('/get-started')}
           className="text-white text-sm font-medium px-8 py-3 rounded-lg border-none cursor-pointer"
           style={{ background: "linear-gradient(135deg,#4f8ef7,#a855f7)" }}
         >
           Get started free
         </button>
-        <button className="text-sm text-white font-medium px-8 py-3 rounded-lg border border-white/30 bg-transparent cursor-pointer hover:bg-white/10 transition-colors">
+      <button
+          onClick={() => navigate('/book-appointment')}
+          className="text-sm text-white font-medium px-8 py-3 rounded-lg border border-white/30 bg-transparent cursor-pointer hover:bg-white/10 transition-colors"
+        >
           Book appointment
         </button>
       </div>
