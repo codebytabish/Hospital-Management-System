@@ -18,7 +18,7 @@ const seed = async () => {
     role: 'admin'
   })
 
-  console.log('✅ Admin created: admin@synaptoclin.com / admin123456')
+  console.log(' Admin created: admin@synaptoclin.com / admin123456')
   process.exit()
 }
 
