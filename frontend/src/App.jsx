@@ -10,6 +10,9 @@ import Login from './pages/Login'
 import GetStarted from './pages/GetStarted'
 import PatientDashboard from './pages/PatientDashboard'
 import ProtectedRoute from './components/ProtectedRoute'
+import BookAppointment from './pages/BookAppointment'
+import AdminDashboard from './pages/AdminDashboard'
+import SymptomChecker from './pages/SymptomChecker'
 
 const Landing = () => (
   <>
@@ -34,6 +37,22 @@ function App() {
             <PatientDashboard />
           </ProtectedRoute>
         } />
+        <Route path="/book-appointment" element={
+  <ProtectedRoute>
+    <BookAppointment />
+  </ProtectedRoute>
+} />
+
+<Route path="/admin" element={
+  <ProtectedRoute role="admin">
+    <AdminDashboard />
+  </ProtectedRoute>
+} />
+<Route path="/symptom-checker" element={
+  <ProtectedRoute>
+    <SymptomChecker />
+  </ProtectedRoute>
+} />
       </Routes>
     </>
   )

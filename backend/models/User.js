@@ -11,24 +11,21 @@ const userSchema = new mongoose.Schema(
       enum: ["patient", "doctor", "admin"],
       default: "patient",
     },
+    specialization: { type: String }, // ← added
     phone: { type: String },
     avatar: { type: String },
     isVerified: { type: Boolean, default: false },
-
-    // OTP for password reset (reuse pattern from uni-port)
     otp: { type: String },
     otpExpires: { type: Date },
   },
   { timestamps: true }
 );
 
-// Hash password before save
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
   this.password = await bcrypt.hash(this.password, 12);
 });
 
-// Compare passwords
 userSchema.methods.matchPassword = async function (entered) {
   return await bcrypt.compare(entered, this.password);
 };

@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { useAuth } from '../context/AuthContext'
 
 const isProperCase = (str) => str.split(' ').every(w => w[0] === w[0]?.toUpperCase())
 
 const GetStarted = () => {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'patient' })
   const [loading, setLoading] = useState(false)
 
@@ -20,8 +22,7 @@ const GetStarted = () => {
     setLoading(true)
     try {
       const res = await axios.post('http://localhost:5000/api/auth/register', formData)
-      localStorage.setItem('token', res.data.token)
-      localStorage.setItem('user', JSON.stringify(res.data.user))
+      login(res.data.user, res.data.token)
       navigate('/dashboard')
     } catch (err) {
       alert(err.response?.data?.message || 'Registration failed.')
@@ -36,7 +37,6 @@ const GetStarted = () => {
   return (
     <div className="min-h-screen" style={{ background: "#0a0f1e" }}>
 
-      {/* Breadcrumb */}
       <div className="px-8 py-3 border-b border-white/10 text-sm text-white/40">
         <span onClick={() => navigate('/')} className="cursor-pointer hover:text-white/70 transition-colors">
           Home
@@ -45,11 +45,9 @@ const GetStarted = () => {
         <span className="text-white/70">Register</span>
       </div>
 
-      {/* Form */}
       <div className="flex items-center justify-center py-16">
         <div className="w-full max-w-sm p-8 rounded-2xl border border-white/10" style={{ background: "#111827" }}>
 
-          {/* Logo */}
           <h1
             className="text-3xl font-bold text-center mb-6"
             style={{
@@ -59,15 +57,13 @@ const GetStarted = () => {
               backgroundClip: "text",
             }}
           >
-            SynaptoClin 
+            SynaptoClin
           </h1>
 
           <h2 className="text-xl font-medium text-white mb-1">Create account</h2>
-          <p className="text-sm text-white/45 mb-8">Join SynaptoClin today</p>
+          <p className="text-sm text-white/45 mb-8">Join SynaptoClin as a patient</p>
 
           <form onSubmit={handleSubmit}>
-
-            {/* Name */}
             <input
               type="text"
               placeholder="Full Name"
@@ -80,7 +76,6 @@ const GetStarted = () => {
               <p className={errorClass}>Each word must start with a capital letter.</p>
             )}
 
-            {/* Email */}
             <input
               type="email"
               placeholder="Email"
@@ -90,7 +85,6 @@ const GetStarted = () => {
               className={inputClass}
             />
 
-            {/* Password */}
             <input
               type="password"
               placeholder="Password (min 6 characters)"
@@ -101,21 +95,10 @@ const GetStarted = () => {
               className={inputClass}
             />
 
-            {/* Role */}
-            <select
-              value={formData.role}
-              onChange={set('role')}
-              className="w-full px-4 py-2.5 rounded-lg text-sm text-white border border-white/10 bg-white/5 focus:outline-none focus:border-blue-500 mb-6"
-              style={{ background: "#1f2937" }}
-            >
-              <option value="patient">Patient</option>
-              <option value="doctor">Doctor</option>
-            </select>
-
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 rounded-lg text-sm text-white font-medium border-none cursor-pointer disabled:opacity-50"
+              className="w-full py-2.5 rounded-lg text-sm text-white font-medium border-none cursor-pointer disabled:opacity-50 mt-3"
               style={{ background: "linear-gradient(135deg,#4f8ef7,#a855f7)" }}
             >
               {loading ? 'Creating account...' : 'Create account'}

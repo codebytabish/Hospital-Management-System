@@ -15,9 +15,12 @@ const Login = () => {
     setLoading(true)
     try {
       const res = await axios.post('http://localhost:5000/api/auth/login', formData)
-      if (res.data.success && res.data.token) {
+      if (res.data.token) {
         login(res.data.user, res.data.token)
-        navigate('/dashboard')
+        const role = res.data.user.role
+        if (role === 'admin') navigate('/admin')
+        else if (role === 'doctor') navigate('/doctor-dashboard')
+        else navigate('/dashboard')
       } else {
         alert(res.data.message || 'Login failed.')
       }
@@ -51,7 +54,7 @@ const Login = () => {
               backgroundClip: "text",
             }}
           >
-            SynaptoClin 
+            SynaptoClin
           </h1>
 
           <h2 className="text-xl font-medium text-white mb-1">Welcome back</h2>
