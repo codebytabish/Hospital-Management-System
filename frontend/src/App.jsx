@@ -13,7 +13,12 @@ import ProtectedRoute from './components/ProtectedRoute'
 import BookAppointment from './pages/BookAppointment'
 import AdminDashboard from './pages/AdminDashboard'
 import SymptomChecker from './pages/SymptomChecker'
-
+import MyAppointments from './pages/MyAppointments'
+import HowItWorksPage from "./pages/HowItWorksPage";
+import FeaturesPage from "./pages/FeaturesPage";
+import DoctorDashboard from "./pages/DoctorDashboard";
+import ForDoctors from "./pages/ForDoctors";
+import Profile from './pages/Profile'
 const Landing = () => (
   <>
     <Hero />
@@ -53,6 +58,29 @@ function App() {
     <SymptomChecker />
   </ProtectedRoute>
 } />
+<Route path="/my-appointments" element={
+  <ProtectedRoute>
+    <MyAppointments />
+  </ProtectedRoute>
+} />
+
+<Route path="/doctor-dashboard" element={
+  <ProtectedRoute role="doctor">
+    <DoctorDashboard />
+  </ProtectedRoute>
+} />
+
+
+<Route path="/profile" element={
+  <ProtectedRoute>
+    <Profile />
+  </ProtectedRoute>
+} />
+
+<Route path="/how-it-works" element={<HowItWorksPage />} />
+<Route path="/features" element={<FeaturesPage />} />
+<Route path="/for-doctors" element={<ForDoctors />} />
+
       </Routes>
     </>
   )

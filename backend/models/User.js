@@ -11,8 +11,12 @@ const userSchema = new mongoose.Schema(
       enum: ["patient", "doctor", "admin"],
       default: "patient",
     },
-    specialization: { type: String }, // ← added
-    phone: { type: String },
+    specialization: { type: String },
+    phone: { 
+      type: String,
+      trim: true,
+      
+    },
     avatar: { type: String },
     isVerified: { type: Boolean, default: false },
     otp: { type: String },

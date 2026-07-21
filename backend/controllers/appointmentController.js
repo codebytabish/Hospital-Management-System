@@ -1,21 +1,19 @@
-const Appointment = require("../models/Appointment");
+const Appointment = require('../models/Appointment')
+const User = require('../models/User')
+const notifyPatient = require('../utils/notifyPatient')
 
-// @desc  Book appointment
-// @route POST /api/appointments
 const bookAppointment = async (req, res) => {
   try {
-    const { doctorId, date, timeSlot, symptoms, type } = req.body;
+    const { doctorId, date, timeSlot, symptoms, type } = req.body
 
-    // Conflict detection — same doctor, date, timeslot
     const conflict = await Appointment.findOne({
       doctor: doctorId,
       date: new Date(date),
       timeSlot,
-      status: { $nin: ["cancelled"] },
-    });
-    if (conflict) {
-      return res.status(409).json({ message: "This time slot is already booked" });
-    }
+      status: { $nin: ['cancelled'] }
+    })
+    if (conflict)
+      return res.status(409).json({ message: 'This time slot is already booked' })
 
     const appointment = await Appointment.create({
       patient: req.user._id,
@@ -23,97 +21,112 @@ const bookAppointment = async (req, res) => {
       date,
       timeSlot,
       symptoms,
-      type: type || "in-person",
-    });
+      type: type || 'in-person'
+    })
 
-    await appointment.populate("doctor", "name email");
-    res.status(201).json(appointment);
+    await appointment.populate('doctor', 'name email specialization')
+    res.status(201).json(appointment)
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: err.message })
   }
-};
+}
 
-// @desc  Get my appointments (patient or doctor)
-// @route GET /api/appointments
 const getMyAppointments = async (req, res) => {
   try {
-    const filter =
-      req.user.role === "patient"
-        ? { patient: req.user._id }
-        : { doctor: req.user._id };
+    const filter = req.user.role === 'patient'
+      ? { patient: req.user._id }
+      : { doctor: req.user._id }
 
     const appointments = await Appointment.find(filter)
-      .populate("patient", "name email phone")
-      .populate("doctor", "name email")
-      .sort({ date: 1 });
+      .populate('doctor', 'name email specialization')
+      .populate('patient', 'name email phone')
+      .sort({ date: 1 })
 
-    res.json(appointments);
+    res.json(appointments)
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: err.message })
   }
-};
+}
 
-// @desc  Get single appointment
-// @route GET /api/appointments/:id
 const getAppointment = async (req, res) => {
   try {
     const appt = await Appointment.findById(req.params.id)
-      .populate("patient", "name email phone")
-      .populate("doctor", "name email");
+      .populate('doctor', 'name email specialization')
+      .populate('patient', 'name email phone')
 
-    if (!appt) return res.status(404).json({ message: "Appointment not found" });
-    res.json(appt);
+    if (!appt) return res.status(404).json({ message: 'Appointment not found' })
+    res.json(appt)
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: err.message })
   }
-};
+}
 
-// @desc  Update appointment status
-// @route PATCH /api/appointments/:id/status
 const updateStatus = async (req, res) => {
   try {
-    const { status } = req.body;
+    const { status } = req.body
+
     const appt = await Appointment.findByIdAndUpdate(
       req.params.id,
       { status },
       { new: true }
-    );
-    if (!appt) return res.status(404).json({ message: "Appointment not found" });
-    res.json(appt);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+    )
+      .populate('patient', 'name email phone')
+      .populate('doctor', 'name email')
 
-// @desc  Cancel appointment
-// @route DELETE /api/appointments/:id
+    if (!appt) return res.status(404).json({ message: 'Appointment not found' })
+
+    // Notify patient on confirm or cancel
+    if (status === 'confirmed' || status === 'cancelled') {
+      await notifyPatient({
+        patient: appt.patient,
+        doctor: appt.doctor,
+        appointment: appt,
+        status
+      })
+    }
+
+    res.json(appt)
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+}
+
 const cancelAppointment = async (req, res) => {
   try {
     const appt = await Appointment.findByIdAndUpdate(
       req.params.id,
-      { status: "cancelled" },
+      { status: 'cancelled' },
       { new: true }
-    );
-    if (!appt) return res.status(404).json({ message: "Appointment not found" });
-    res.json({ message: "Appointment cancelled", appt });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+    )
+      .populate('patient', 'name email phone')
+      .populate('doctor', 'name email')
 
-// @desc  Get all appointments (admin)
-// @route GET /api/appointments/all
+    if (!appt) return res.status(404).json({ message: 'Appointment not found' })
+
+    await notifyPatient({
+      patient: appt.patient,
+      doctor: appt.doctor,
+      appointment: appt,
+      status: 'cancelled'
+    })
+
+    res.json({ message: 'Appointment cancelled', appt })
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+}
+
 const getAllAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.find()
-      .populate("patient", "name email")
-      .populate("doctor", "name email")
-      .sort({ date: -1 });
-    res.json(appointments);
+      .populate('doctor', 'name email specialization')
+      .populate('patient', 'name email phone')
+      .sort({ date: -1 })
+    res.json(appointments)
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: err.message })
   }
-};
+}
 
 module.exports = {
   bookAppointment,
@@ -121,5 +134,5 @@ module.exports = {
   getAppointment,
   updateStatus,
   cancelAppointment,
-  getAllAppointments,
-};
+  getAllAppointments
+}

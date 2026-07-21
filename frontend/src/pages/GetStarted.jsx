@@ -8,7 +8,7 @@ const isProperCase = (str) => str.split(' ').every(w => w[0] === w[0]?.toUpperCa
 const GetStarted = () => {
   const navigate = useNavigate()
   const { login } = useAuth()
-  const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'patient' })
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', phone: '', role: 'patient' })
   const [loading, setLoading] = useState(false)
 
   const set = (field) => (e) => setFormData({ ...formData, [field]: e.target.value })
@@ -92,6 +92,14 @@ const GetStarted = () => {
               required
               minLength={6}
               onChange={set('password')}
+              className={inputClass}
+            />
+
+            <input
+              type="text"
+              placeholder="Phone number (e.g. +923001234567)"
+              value={formData.phone}
+              onChange={set('phone')}
               className={inputClass}
             />
 

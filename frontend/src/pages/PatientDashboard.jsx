@@ -32,6 +32,12 @@ const PatientDashboard = () => {
             Welcome, <span className="text-white">{user?.name}</span>
           </span>
           <button
+            onClick={() => navigate('/profile')}
+            className="text-xs text-white/50 border border-white/10 px-4 py-2 rounded-lg hover:border-blue-400/50 hover:text-blue-400 transition-colors cursor-pointer bg-transparent"
+          >
+            Profile
+          </button>
+          <button
             onClick={handleLogout}
             className="text-xs text-white/50 border border-white/10 px-4 py-2 rounded-lg hover:border-red-400/50 hover:text-red-400 transition-colors cursor-pointer bg-transparent"
           >
@@ -43,10 +49,10 @@ const PatientDashboard = () => {
       {/* Content */}
       <div className="px-8 py-10 max-w-5xl mx-auto">
 
-        {/* Quick actions */}
         <h2 className="text-white text-lg font-medium mb-6">What would you like to do?</h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+        {/* Quick actions */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           <div
             onClick={() => navigate('/book-appointment')}
             className="p-6 rounded-2xl border border-white/10 cursor-pointer hover:border-blue-400/40 transition-all"
@@ -85,11 +91,32 @@ const PatientDashboard = () => {
             <h3 className="text-white text-sm font-medium mb-1">My Appointments</h3>
             <p className="text-xs text-white/40">View and manage your appointments</p>
           </div>
+
+          <div
+            onClick={() => navigate('/profile')}
+            className="p-6 rounded-2xl border border-white/10 cursor-pointer hover:border-orange-400/40 transition-all"
+            style={{ background: "#111827" }}
+          >
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
+              style={{ background: "rgba(251,146,60,0.15)" }}>
+              <i className="ti ti-user-edit text-xl" style={{ color: "#fb923c" }} />
+            </div>
+            <h3 className="text-white text-sm font-medium mb-1">My Profile</h3>
+            <p className="text-xs text-white/40">Update your personal information</p>
+          </div>
         </div>
 
         {/* User info card */}
         <div className="p-6 rounded-2xl border border-white/10" style={{ background: "#111827" }}>
-          <h3 className="text-white text-sm font-medium mb-4">Your Profile</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-white text-sm font-medium">Your Profile</h3>
+            <button
+              onClick={() => navigate('/profile')}
+              className="text-xs text-blue-400 hover:underline cursor-pointer bg-transparent border-none"
+            >
+              Edit →
+            </button>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-xs text-white/40 mb-1">Name</p>
@@ -98,6 +125,10 @@ const PatientDashboard = () => {
             <div>
               <p className="text-xs text-white/40 mb-1">Email</p>
               <p className="text-sm text-white">{user?.email}</p>
+            </div>
+            <div>
+              <p className="text-xs text-white/40 mb-1">Phone</p>
+              <p className="text-sm text-white">{user?.phone || <span className="text-white/30">Not set</span>}</p>
             </div>
             <div>
               <p className="text-xs text-white/40 mb-1">Role</p>
