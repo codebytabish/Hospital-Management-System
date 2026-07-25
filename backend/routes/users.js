@@ -28,13 +28,36 @@ router.post('/add-doctor', protect, authorizeRoles('admin'), async (req, res) =>
   }
 })
 
+// Get all patients — admin only
+router.get('/patients', protect, authorizeRoles('admin'), async (req, res) => {
+  try {
+    const patients = await User.find({ role: 'patient' }).select('name email phone createdAt')
+    res.json({ success: true, patients })
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+})
+
+// Delete user — admin only
+router.delete('/:id', protect, authorizeRoles('admin'), async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id)
+    if (!user) return res.status(404).json({ message: 'User not found' })
+    if (user.role === 'admin') return res.status(403).json({ message: 'Cannot delete admin' })
+    await User.findByIdAndDelete(req.params.id)
+    res.json({ success: true, message: 'User deleted' })
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+})
+
 // Update profile
 router.put('/profile', protect, async (req, res) => {
   try {
-    const { name, phone } = req.body
+    const { name, phone, specialization  } = req.body
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      { name, phone },
+      { name, phone, specialization },
       { new: true }
     ).select('-password')
 

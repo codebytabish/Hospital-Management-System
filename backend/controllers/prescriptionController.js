@@ -1,63 +1,66 @@
-const Prescription = require("../models/Prescription");
+const Prescription = require('../models/Prescription')
 
-// @desc  Create prescription (doctor only)
-// @route POST /api/prescriptions
+// Create prescription
 const createPrescription = async (req, res) => {
   try {
-    const { patientId, appointmentId, medicines, diagnosis, advice, followUpDate } =
-      req.body;
+    const { appointmentId, patientId, diagnosis, medicines, notes } = req.body
 
     const prescription = await Prescription.create({
-      doctor: req.user._id,
-      patient: patientId,
       appointment: appointmentId,
-      medicines,
+      patient: patientId,
+      doctor: req.user._id,
       diagnosis,
-      advice,
-      followUpDate,
-    });
+      medicines,
+      notes
+    })
 
-    await prescription.populate("patient", "name email");
-    res.status(201).json(prescription);
+    await prescription.populate('patient', 'name email')
+    await prescription.populate('doctor', 'name specialization')
+
+    res.status(201).json({ success: true, prescription })
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: err.message })
   }
-};
+}
 
-// @desc  Get prescriptions for logged-in user
-// @route GET /api/prescriptions
-const getMyPrescriptions = async (req, res) => {
+// Get doctor's prescriptions
+const getDoctorPrescriptions = async (req, res) => {
   try {
-    const filter =
-      req.user.role === "patient"
-        ? { patient: req.user._id }
-        : { doctor: req.user._id };
-
-    const prescriptions = await Prescription.find(filter)
-      .populate("patient", "name email")
-      .populate("doctor", "name email")
-      .sort({ createdAt: -1 });
-
-    res.json(prescriptions);
+    const prescriptions = await Prescription.find({ doctor: req.user._id })
+      .populate('patient', 'name email')
+      .populate('appointment', 'date timeSlot')
+      .sort({ createdAt: -1 })
+    res.json({ success: true, prescriptions })
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: err.message })
   }
-};
+}
 
-// @desc  Get single prescription
-// @route GET /api/prescriptions/:id
+// Get patient's prescriptions
+const getPatientPrescriptions = async (req, res) => {
+  try {
+    const prescriptions = await Prescription.find({ patient: req.user._id })
+      .populate('doctor', 'name specialization')
+      .populate('appointment', 'date timeSlot')
+      .sort({ createdAt: -1 })
+    res.json({ success: true, prescriptions })
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+}
+
+// Get single prescription
 const getPrescription = async (req, res) => {
   try {
     const prescription = await Prescription.findById(req.params.id)
-      .populate("patient", "name email phone")
-      .populate("doctor", "name email");
-
-    if (!prescription)
-      return res.status(404).json({ message: "Prescription not found" });
-    res.json(prescription);
+      .populate('patient', 'name email phone')
+      .populate('doctor', 'name specialization')
+      .populate('appointment', 'date timeSlot type')
+    if (!prescription) return res.status(404).json({ message: 'Prescription not found' })
+    res.json({ success: true, prescription })
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: err.message })
   }
-};
+}
 
-module.exports = { createPrescription, getMyPrescriptions, getPrescription };
+module.exports = { createPrescription, getDoctorPrescriptions, getPatientPrescriptions, getPrescription }
