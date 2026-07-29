@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useAuth } from '../context/AuthContext'
+import toast from 'react-hot-toast'
 
 const isProperCase = (str) => str.split(' ').every(w => w[0] === w[0]?.toUpperCase())
 
@@ -16,7 +17,7 @@ const GetStarted = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!isProperCase(formData.name)) {
-      alert('Name: each word must start with a capital letter.')
+      toast.error('Name: each word must start with a capital letter.')
       return
     }
     setLoading(true)
@@ -25,7 +26,7 @@ const GetStarted = () => {
       login(res.data.user, res.data.token)
       navigate('/dashboard')
     } catch (err) {
-      alert(err.response?.data?.message || 'Registration failed.')
+      toast.error(err.response?.data?.message || 'Registration failed.')
     } finally {
       setLoading(false)
     }

@@ -2,6 +2,11 @@ const Appointment = require('../models/Appointment')
 const User = require('../models/User')
 const notifyPatient = require('../utils/notifyPatient')
 
+const generateMeetingUrl = (appointmentId) => {
+  const roomName = `synaptoclin-${appointmentId}`
+  return `https://meet.jit.si/${roomName}`
+}
+
 const bookAppointment = async (req, res) => {
   try {
     const { doctorId, date, timeSlot, symptoms, type } = req.body
@@ -10,7 +15,7 @@ const bookAppointment = async (req, res) => {
       doctor: doctorId,
       date: new Date(date),
       timeSlot,
-      status: { $nin: ['cancelled'] }
+      status: { $nin: ['cancelled', 'no-show'] }
     })
     if (conflict)
       return res.status(409).json({ message: 'This time slot is already booked' })
@@ -63,17 +68,29 @@ const getAppointment = async (req, res) => {
 
 const updateStatus = async (req, res) => {
   try {
-    const { status } = req.body
+    const { status, notes } = req.body
+
+    // Find existing to check type
+    const existing = await Appointment.findById(req.params.id)
+    if (!existing) return res.status(404).json({ message: 'Appointment not found' })
+
+    const updateData = { status }
+
+    // Add doctor notes if provided
+    if (notes) updateData.notes = notes
+
+    // Generate Jitsi meeting URL for online appointments on confirm
+    if (status === 'confirmed' && (existing.type === 'online' || existing.type === 'telemedicine')) {
+      updateData.meetingUrl = generateMeetingUrl(req.params.id)
+    }
 
     const appt = await Appointment.findByIdAndUpdate(
       req.params.id,
-      { status },
+      updateData,
       { new: true }
     )
       .populate('patient', 'name email phone')
       .populate('doctor', 'name email')
-
-    if (!appt) return res.status(404).json({ message: 'Appointment not found' })
 
     // Notify patient on confirm or cancel
     if (status === 'confirmed' || status === 'cancelled') {

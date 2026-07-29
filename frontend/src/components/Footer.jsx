@@ -11,7 +11,7 @@ const Footer
           {/* paragraph */}
          <div>
         <p className='py-4 px-5  text-white/75 hover:text-white text-sm transition-colors'>
-             C 2026 SynaptoClin.AI.All rights reserved.
+             © 2026 SynaptoClin.AI.All rights reserved.
         </p>
         </div>
 

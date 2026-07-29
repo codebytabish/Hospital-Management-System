@@ -19,6 +19,15 @@ import FeaturesPage from "./pages/FeaturesPage";
 import DoctorDashboard from "./pages/DoctorDashboard";
 import ForDoctors from "./pages/ForDoctors";
 import Profile from './pages/Profile'
+import PatientSymptomHistory from './pages/PatientSymptomHistory'
+import NotFound from './pages/NotFound'
+import Prescriptions from './pages/Prescriptions'
+import ForgotPassword from './pages/ForgotPassword'
+import MyPrescriptions from './pages/MyPrescriptions'
+import DoctorProfile from './pages/DoctorProfile'
+import Payment from './pages/Payment'
+import MyPayments from './pages/MyPayments'
+
 const Landing = () => (
   <>
     <Hero />
@@ -76,11 +85,43 @@ function App() {
     <Profile />
   </ProtectedRoute>
 } />
+<Route path="/patient-history/:patientId" element={
+  <ProtectedRoute role="doctor">
+    <PatientSymptomHistory />
+  </ProtectedRoute>
+} />
 
+<Route path="/prescriptions" element={
+  <ProtectedRoute role="doctor">
+    <Prescriptions />
+  </ProtectedRoute>
+} />
+
+<Route path="/my-prescriptions" element={
+  <ProtectedRoute>
+    <MyPrescriptions />
+  </ProtectedRoute>
+} />
+<Route path="/doctor-profile" element={
+  <ProtectedRoute role="doctor">
+    <DoctorProfile />
+  </ProtectedRoute>
+} />
+<Route path="/payment" element={
+  <ProtectedRoute>
+    <Payment />
+  </ProtectedRoute>
+} />
+<Route path="/my-payments" element={
+  <ProtectedRoute>
+    <MyPayments />
+  </ProtectedRoute>
+} />
 <Route path="/how-it-works" element={<HowItWorksPage />} />
 <Route path="/features" element={<FeaturesPage />} />
 <Route path="/for-doctors" element={<ForDoctors />} />
-
+<Route path="*" element={<NotFound />} />
+<Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
     </>
   )

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import { useAuth } from '../context/AuthContext'
+import toast from 'react-hot-toast'
 
 const Login = () => {
   const navigate = useNavigate()
@@ -22,10 +23,10 @@ const Login = () => {
         else if (role === 'doctor') navigate('/doctor-dashboard')
         else navigate('/dashboard')
       } else {
-        alert(res.data.message || 'Login failed.')
+        toast.error(res.data.message || 'Login failed.')
       }
     } catch (err) {
-      alert(err.response?.data?.message || 'Login failed.')
+      toast.error(err.response?.data?.message || 'Login failed.')
     } finally {
       setLoading(false)
     }

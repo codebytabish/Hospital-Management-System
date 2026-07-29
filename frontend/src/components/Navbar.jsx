@@ -1,37 +1,70 @@
 import React, { useState } from 'react'
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+    setMenuOpen(false);
+  }
 
   return (
     <nav className='bg-[#0a0f1e]'>
       {/* Main bar */}
       <div className='flex justify-between items-center px-5 h-16'>
-        
+
         {/* Logo */}
         <div>
           <img src='/synaptoclin_logo_v3.svg' className='h-16 w-auto' alt='SynaptoClin' />
         </div>
 
-        {/* Desktop nav links — hidden on mobile */}
+        {/* Desktop nav links */}
         <div className='hidden md:flex items-center gap-7'>
           <Link to='/features' className='text-white/75 hover:text-white text-sm transition-colors'>Features</Link>
           <Link to='/how-it-works' className='text-white/75 hover:text-white text-sm transition-colors'>How it works</Link>
           <Link to='/for-doctors' className='text-white/75 hover:text-white text-sm transition-colors'>For Doctors</Link>
         </div>
 
-        {/* Desktop actions — hidden on mobile */}
+        {/* Desktop actions */}
         <div className='hidden md:flex items-center gap-3'>
-          <Link to='/login' className='border rounded-md border-white/25 py-2 px-4 text-white/75 hover:text-white text-sm transition-colors'>Login</Link>
-          <Link to='/get-started' className=' text-white text-sm px-4 py-2 rounded-md transition-colors'
-          style={{background:'linear-gradient(15deg,#4f8ef7,#a855f7)'}}
-          >
-            Get Started
-          </Link>
+          {user ? (
+            <>
+              <button
+                onClick={() => navigate(
+                  user.role === 'admin' ? '/admin'
+                  : user.role === 'doctor' ? '/doctor-dashboard'
+                  : '/dashboard'
+                )}
+                className='text-sm text-white/70 hover:text-white transition-colors bg-transparent border-none cursor-pointer'
+              >
+                Dashboard
+              </button>
+              <button
+                onClick={handleLogout}
+                className='border rounded-md border-white/25 py-2 px-4 text-white/75 hover:text-red-400 hover:border-red-400/50 text-sm transition-colors bg-transparent cursor-pointer'
+              >
+                Log out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to='/login' className='border rounded-md border-white/25 py-2 px-4 text-white/75 hover:text-white text-sm transition-colors'>
+                Login
+              </Link>
+              <Link to='/get-started' className='text-white text-sm px-4 py-2 rounded-md transition-colors'
+                style={{ background: 'linear-gradient(15deg,#4f8ef7,#a855f7)' }}>
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
 
-        {/* Hamburger — visible on mobile only */}
+        {/* Hamburger */}
         <button
           className='md:hidden flex flex-col gap-1.5 p-1 cursor-pointer'
           onClick={() => setMenuOpen(!menuOpen)}
@@ -43,14 +76,41 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile dropdown menu */}
+      {/* Mobile dropdown */}
       {menuOpen && (
         <div className='md:hidden bg-[#0d1426] border-t border-white/10 px-5 pb-4 flex flex-col'>
-          <Link to='/features'    className='text-white/75 py-3 border-b border-white/5 text-sm' onClick={() => setMenuOpen(false)}>Features</Link>
+          <Link to='/features' className='text-white/75 py-3 border-b border-white/5 text-sm' onClick={() => setMenuOpen(false)}>Features</Link>
           <Link to='/how-it-works' className='text-white/75 py-3 border-b border-white/5 text-sm' onClick={() => setMenuOpen(false)}>How it works</Link>
           <Link to='/for-doctors' className='text-white/75 py-3 border-b border-white/5 text-sm' onClick={() => setMenuOpen(false)}>For Doctors</Link>
-          <Link to='/login'       className='text-white/75 py-3 border-b border-white/5 text-sm' onClick={() => setMenuOpen(false)}>Login</Link>
-          <Link to='/get-started' className='text-blue-400 font-medium py-3 text-sm'            onClick={() => setMenuOpen(false)}>Get Started →</Link>
+
+          {user ? (
+            <>
+              <button
+                onClick={() => {
+                  navigate(
+                    user.role === 'admin' ? '/admin'
+                    : user.role === 'doctor' ? '/doctor-dashboard'
+                    : '/dashboard'
+                  )
+                  setMenuOpen(false)
+                }}
+                className='text-white/75 py-3 border-b border-white/5 text-sm text-left bg-transparent border-l-0 border-r-0 border-t-0 cursor-pointer'
+              >
+                Dashboard
+              </button>
+              <button
+                onClick={handleLogout}
+                className='text-red-400 py-3 text-sm text-left bg-transparent border-none cursor-pointer'
+              >
+                Log out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to='/login' className='text-white/75 py-3 border-b border-white/5 text-sm' onClick={() => setMenuOpen(false)}>Login</Link>
+              <Link to='/get-started' className='text-blue-400 font-medium py-3 text-sm' onClick={() => setMenuOpen(false)}>Get Started →</Link>
+            </>
+          )}
         </div>
       )}
     </nav>

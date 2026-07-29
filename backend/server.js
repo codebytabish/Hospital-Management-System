@@ -25,11 +25,13 @@ app.use("/api/users", require("./routes/users"));
 app.use("/api/appointment", require("./routes/appointmentRoutes"));
 app.use("/api/prescription", require("./routes/prescriptionRoute"));
 app.use("/api/ai", require("./routes/ai"));
+app.use('/api/payment', require('./routes/paymentRoutes'))
 
 
 app.get('/', (req, res) => {
     res.send('Hospital Management Backend is running...');
 });
+
 
 // Start server
 app.listen(PORT, () => {

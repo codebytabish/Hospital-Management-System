@@ -2,15 +2,15 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useAuth } from '../context/AuthContext'
-import toast from 'react-hot-toast'
 
-const Profile = () => {
+const DoctorProfile = () => {
   const navigate = useNavigate()
   const { user, token, login } = useAuth()
 
   const [formData, setFormData] = useState({
     name: user?.name || '',
     phone: user?.phone || '',
+    specialization: user?.specialization || '',
   })
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -35,10 +35,10 @@ const Profile = () => {
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       )
-      login(res.data.user, token) // update context
-      toast.success('✅ Profile updated successfully')
+      login(res.data.user, token)
+      setProfileMsg('✅ Profile updated successfully')
     } catch (err) {
-      toast.error(err.response?.data?.message || '❌ Failed to update profile')
+      setProfileMsg(err.response?.data?.message || '❌ Failed to update profile')
     } finally {
       setLoadingProfile(false)
     }
@@ -48,11 +48,11 @@ const Profile = () => {
     e.preventDefault()
     setPasswordMsg('')
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error('❌ Passwords do not match')
+      setPasswordMsg('❌ Passwords do not match')
       return
     }
     if (passwordData.newPassword.length < 6) {
-      toast.error('❌ Password must be at least 6 characters')
+      setPasswordMsg('❌ Password must be at least 6 characters')
       return
     }
     setLoadingPassword(true)
@@ -65,10 +65,10 @@ const Profile = () => {
         },
         { headers: { Authorization: `Bearer ${token}` } }
       )
-      toast.success('✅ Password changed successfully')
+      setPasswordMsg('✅ Password changed successfully')
       setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' })
     } catch (err) {
-      toast.error(err.response?.data?.message || '❌ Failed to change password')
+      setPasswordMsg(err.response?.data?.message || '❌ Failed to change password')
     } finally {
       setLoadingPassword(false)
     }
@@ -84,9 +84,9 @@ const Profile = () => {
         style={{ background: "#111827" }}>
         <span onClick={() => navigate('/')} className="cursor-pointer hover:text-white/70">Home</span>
         <span className="mx-2 text-white/20">/</span>
-        <span onClick={() => navigate('/dashboard')} className="cursor-pointer hover:text-white/70">Dashboard</span>
+        <span onClick={() => navigate('/doctor-dashboard')} className="cursor-pointer hover:text-white/70">Dashboard</span>
         <span className="mx-2 text-white/20">/</span>
-        <span className="text-white/70">Profile</span>
+        <span className="text-white/70">My Profile</span>
       </div>
 
       <div className="max-w-2xl mx-auto px-8 py-10">
@@ -103,14 +103,22 @@ const Profile = () => {
           <div>
             <p className="text-white font-medium">{user?.name}</p>
             <p className="text-sm text-white/40">{user?.email}</p>
-            <span className="text-xs text-blue-400 border border-blue-400/30 px-2 py-0.5 rounded-full capitalize"
-              style={{ background: "rgba(79,142,247,0.1)" }}>
-              {user?.role}
-            </span>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-xs text-green-400 border border-green-400/30 px-2 py-0.5 rounded-full capitalize"
+                style={{ background: "rgba(16,185,129,0.1)" }}>
+                {user?.role}
+              </span>
+              {user?.specialization && (
+                <span className="text-xs text-blue-400 border border-blue-400/30 px-2 py-0.5 rounded-full"
+                  style={{ background: "rgba(79,142,247,0.1)" }}>
+                  {user?.specialization}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Profile update form */}
+        {/* Profile update */}
         <div className="p-6 rounded-2xl border border-white/10 mb-6"
           style={{ background: "#111827" }}>
           <h2 className="text-white text-sm font-medium mb-4">Personal Information</h2>
@@ -132,6 +140,15 @@ const Profile = () => {
               value={user?.email}
               disabled
               className="w-full px-4 py-2.5 rounded-lg text-sm text-white/30 border border-white/5 bg-white/3 mb-3 cursor-not-allowed"
+            />
+
+            <label className="text-xs text-white/40 mb-1 block">Specialization</label>
+            <input
+              type="text"
+              value={formData.specialization}
+              onChange={set('specialization')}
+              placeholder="e.g. Cardiologist, Neurologist"
+              className={inputClass}
             />
 
             <label className="text-xs text-white/40 mb-1 block">
@@ -163,7 +180,7 @@ const Profile = () => {
           </form>
         </div>
 
-        {/* Password change form */}
+        {/* Change password */}
         <div className="p-6 rounded-2xl border border-white/10"
           style={{ background: "#111827" }}>
           <h2 className="text-white text-sm font-medium mb-4">Change Password</h2>
@@ -220,4 +237,4 @@ const Profile = () => {
   )
 }
 
-export default Profile
+export default DoctorProfile

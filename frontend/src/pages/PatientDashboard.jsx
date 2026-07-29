@@ -54,6 +54,18 @@ const PatientDashboard = () => {
         {/* Quick actions */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           <div
+  onClick={() => navigate('/my-payments')}
+  className="p-6 rounded-2xl border border-white/10 cursor-pointer hover:border-green-400/40 transition-all"
+  style={{ background: "#111827" }}
+>
+  <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
+    style={{ background: "rgba(16,185,129,0.15)" }}>
+    <i className="ti ti-receipt text-xl" style={{ color: "#10b981" }} />
+  </div>
+  <h3 className="text-white text-sm font-medium mb-1">My Payments</h3>
+  <p className="text-xs text-white/40">View your payment history</p>
+</div>
+          <div
             onClick={() => navigate('/book-appointment')}
             className="p-6 rounded-2xl border border-white/10 cursor-pointer hover:border-blue-400/40 transition-all"
             style={{ background: "#111827" }}
@@ -65,6 +77,20 @@ const PatientDashboard = () => {
             <h3 className="text-white text-sm font-medium mb-1">Book Appointment</h3>
             <p className="text-xs text-white/40">Schedule a visit with a verified doctor</p>
           </div>
+
+
+          <div
+  onClick={() => navigate('/my-prescriptions')}
+  className="p-6 rounded-2xl border border-white/10 cursor-pointer hover:border-blue-400/40 transition-all"
+  style={{ background: "#111827" }}
+>
+  <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
+    style={{ background: "rgba(79,142,247,0.15)" }}>
+    <i className="ti ti-file-text text-xl" style={{ color: "#4f8ef7" }} />
+  </div>
+  <h3 className="text-white text-sm font-medium mb-1">My Prescriptions</h3>
+  <p className="text-xs text-white/40">View prescriptions from your doctors</p>
+</div>
 
           <div
             onClick={() => navigate('/symptom-checker')}

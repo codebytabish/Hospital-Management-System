@@ -2,11 +2,14 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useAuth } from '../context/AuthContext'
+import toast from 'react-hot-toast'
 
 const statusColor = {
   pending: { text: 'text-yellow-400', bg: 'rgba(234,179,8,0.1)', border: 'rgba(234,179,8,0.3)' },
   confirmed: { text: 'text-green-400', bg: 'rgba(16,185,129,0.1)', border: 'rgba(16,185,129,0.3)' },
   cancelled: { text: 'text-red-400', bg: 'rgba(239,68,68,0.1)', border: 'rgba(239,68,68,0.3)' },
+  completed: { text: 'text-blue-400', bg: 'rgba(79,142,247,0.1)', border: 'rgba(79,142,247,0.3)' },
+  'no-show': { text: 'text-white/40', bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.1)' },
 }
 
 const DoctorDashboard = () => {
@@ -40,7 +43,7 @@ const DoctorDashboard = () => {
       )
       fetchAppointments()
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to update status.')
+      toast.error(err.response?.data?.message || 'Failed to update status.')
     }
   }
 
@@ -77,6 +80,16 @@ const DoctorDashboard = () => {
             <p className="text-sm text-white">{user?.name}</p>
             <p className="text-xs text-white/40">{user?.specialization || 'Doctor'}</p>
           </div>
+          <button
+            onClick={() => navigate('/doctor-profile')}
+            className="text-xs text-white/50 border border-white/10 px-4 py-2 rounded-lg hover:border-blue-400/50 hover:text-blue-400 transition-colors cursor-pointer bg-transparent">
+            Profile
+          </button>
+          <button
+            onClick={() => navigate('/prescriptions')}
+            className="text-xs text-white/50 border border-white/10 px-4 py-2 rounded-lg hover:border-blue-400/50 hover:text-blue-400 transition-colors cursor-pointer bg-transparent">
+            Prescriptions
+          </button>
           <button onClick={handleLogout}
             className="text-xs text-white/50 border border-white/10 px-4 py-2 rounded-lg hover:border-red-400/50 hover:text-red-400 transition-colors cursor-pointer bg-transparent">
             Log out
@@ -165,6 +178,13 @@ const DoctorDashboard = () => {
                       >
                         {appt.status}
                       </span>
+                      {/* Online badge */}
+                      {(appt.type === 'online' || appt.type === 'telemedicine') && (
+                        <span className="text-xs text-blue-400 border border-blue-400/30 px-2 py-0.5 rounded-full flex items-center gap-1"
+                          style={{ background: "rgba(79,142,247,0.1)" }}>
+                          <i className="ti ti-video" /> Online
+                        </span>
+                      )}
                     </div>
 
                     {/* Appointment details */}
@@ -185,6 +205,7 @@ const DoctorDashboard = () => {
                       </span>
                     </div>
 
+                    {/* Symptoms */}
                     {appt.symptoms && (
                       <div className="mt-2 px-3 py-2 rounded-lg text-xs text-white/50 border border-white/8"
                         style={{ background: "rgba(255,255,255,0.03)" }}>
@@ -192,34 +213,68 @@ const DoctorDashboard = () => {
                         {appt.symptoms}
                       </div>
                     )}
+
+                    {/* Buttons */}
+                    <div className="flex items-center gap-2 mt-3 flex-wrap">
+                      <button
+                        onClick={() => navigate(`/patient-history/${appt.patient?._id}`)}
+                        className="text-xs text-purple-400 border border-purple-400/30 px-3 py-1.5 rounded-lg bg-transparent cursor-pointer hover:bg-purple-400/10 transition-colors"
+                      >
+                        <i className="ti ti-brain mr-1" />
+                        Symptom History
+                      </button>
+                      <button
+                        onClick={() => navigate('/prescriptions')}
+                        className="text-xs text-blue-400 border border-blue-400/30 px-3 py-1.5 rounded-lg bg-transparent cursor-pointer hover:bg-blue-400/10 transition-colors"
+                      >
+                        <i className="ti ti-file-text mr-1" />
+                        Write Prescription
+                      </button>
+
+                      {/* Join video call */}
+                      {(appt.type === 'online' || appt.type === 'telemedicine') &&
+                        appt.status === 'confirmed' &&
+                        appt.meetingUrl && (
+                          <a
+                            href={appt.meetingUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-green-400 border border-green-400/30 px-3 py-1.5 rounded-lg hover:bg-green-400/10 transition-colors inline-flex items-center gap-1"
+                          >
+                            <i className="ti ti-video" />
+                            Join Video Call
+                          </a>
+                      )}
+                    </div>
                   </div>
 
                   {/* Action buttons */}
-                  {appt.status === 'pending' && (
-                    <div className="flex flex-col gap-2 ml-4">
-                      <button
-                        onClick={() => handleStatus(appt._id, 'confirmed')}
-                        className="text-xs text-green-400 border border-green-400/30 px-3 py-1.5 rounded-lg bg-transparent cursor-pointer hover:bg-green-400/10 transition-colors"
-                      >
-                        Confirm
-                      </button>
+                  <div className="flex flex-col gap-2 ml-4">
+                    {appt.status === 'pending' && (
+                      <>
+                        <button
+                          onClick={() => handleStatus(appt._id, 'confirmed')}
+                          className="text-xs text-green-400 border border-green-400/30 px-3 py-1.5 rounded-lg bg-transparent cursor-pointer hover:bg-green-400/10 transition-colors"
+                        >
+                          Confirm
+                        </button>
+                        <button
+                          onClick={() => handleStatus(appt._id, 'cancelled')}
+                          className="text-xs text-red-400 border border-red-400/30 px-3 py-1.5 rounded-lg bg-transparent cursor-pointer hover:bg-red-400/10 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    )}
+                    {appt.status === 'confirmed' && (
                       <button
                         onClick={() => handleStatus(appt._id, 'cancelled')}
                         className="text-xs text-red-400 border border-red-400/30 px-3 py-1.5 rounded-lg bg-transparent cursor-pointer hover:bg-red-400/10 transition-colors"
                       >
                         Cancel
                       </button>
-                    </div>
-                  )}
-
-                  {appt.status === 'confirmed' && (
-                    <button
-                      onClick={() => handleStatus(appt._id, 'cancelled')}
-                      className="text-xs text-red-400 border border-red-400/30 px-3 py-1.5 rounded-lg bg-transparent cursor-pointer hover:bg-red-400/10 transition-colors ml-4"
-                    >
-                      Cancel
-                    </button>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
