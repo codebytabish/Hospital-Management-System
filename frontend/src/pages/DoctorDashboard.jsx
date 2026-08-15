@@ -18,6 +18,8 @@ const DoctorDashboard = () => {
   const [appointments, setAppointments] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
+  const [notes, setNotes] = useState({})
+  const [savingNotes, setSavingNotes] = useState({})
 
   const fetchAppointments = async () => {
     try {
@@ -44,6 +46,23 @@ const DoctorDashboard = () => {
       fetchAppointments()
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to update status.')
+    }
+  }
+
+  const handleSaveNotes = async (id) => {
+    setSavingNotes(prev => ({ ...prev, [id]: true }))
+    try {
+      await axios.patch(
+        `http://localhost:5000/api/appointment/${id}/status`,
+        { status: 'confirmed', notes: notes[id] },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      toast.success('Notes saved successfully')
+      fetchAppointments()
+    } catch (err) {
+      toast.error('Failed to save notes')
+    } finally {
+      setSavingNotes(prev => ({ ...prev, [id]: false }))
     }
   }
 
@@ -178,7 +197,6 @@ const DoctorDashboard = () => {
                       >
                         {appt.status}
                       </span>
-                      {/* Online badge */}
                       {(appt.type === 'online' || appt.type === 'telemedicine') && (
                         <span className="text-xs text-blue-400 border border-blue-400/30 px-2 py-0.5 rounded-full flex items-center gap-1"
                           style={{ background: "rgba(79,142,247,0.1)" }}>
@@ -214,6 +232,42 @@ const DoctorDashboard = () => {
                       </div>
                     )}
 
+                    {/* Doctor notes — editable when confirmed */}
+                    {appt.status === 'confirmed' && (
+                      <div className="mt-3">
+                        <label className="text-xs text-white/30 mb-1 block">
+                          <i className="ti ti-notes mr-1" />
+                          Doctor Notes
+                        </label>
+                        <textarea
+                          value={notes[appt._id] ?? appt.notes ?? ''}
+                          onChange={(e) => setNotes(prev => ({ ...prev, [appt._id]: e.target.value }))}
+                          rows={2}
+                          placeholder="Add notes for this patient..."
+                          className="w-full px-3 py-2 rounded-lg text-xs text-white placeholder-white/20 border border-white/8 bg-white/5 focus:outline-none focus:border-blue-500 resize-none mb-2"
+                        />
+                        <button
+                          onClick={() => handleSaveNotes(appt._id)}
+                          disabled={savingNotes[appt._id]}
+                          className="text-xs text-blue-400 border border-blue-400/30 px-3 py-1.5 rounded-lg bg-transparent cursor-pointer hover:bg-blue-400/10 transition-colors disabled:opacity-50"
+                        >
+                          {savingNotes[appt._id] ? 'Saving...' : 'Save Notes'}
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Show notes read-only for other statuses */}
+                    {appt.status !== 'confirmed' && appt.notes && (
+                      <div className="mt-3 px-3 py-2 rounded-lg border border-white/8 text-xs"
+                        style={{ background: "rgba(79,142,247,0.05)" }}>
+                        <p className="text-white/30 mb-1">
+                          <i className="ti ti-notes mr-1" />
+                          Doctor Notes
+                        </p>
+                        <p className="text-white/60">{appt.notes}</p>
+                      </div>
+                    )}
+
                     {/* Buttons */}
                     <div className="flex items-center gap-2 mt-3 flex-wrap">
                       <button
@@ -230,8 +284,6 @@ const DoctorDashboard = () => {
                         <i className="ti ti-file-text mr-1" />
                         Write Prescription
                       </button>
-
-                      {/* Join video call */}
                       {(appt.type === 'online' || appt.type === 'telemedicine') &&
                         appt.status === 'confirmed' &&
                         appt.meetingUrl && (
@@ -244,7 +296,7 @@ const DoctorDashboard = () => {
                             <i className="ti ti-video" />
                             Join Video Call
                           </a>
-                      )}
+                        )}
                     </div>
                   </div>
 

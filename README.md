@@ -6,7 +6,6 @@ SynaptoClin is a full-stack AI-powered healthcare management platform. It combin
 
 ---
 
-**Status:** Backend complete. Frontend under active development.
 
 
 
